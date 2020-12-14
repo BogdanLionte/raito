@@ -1,0 +1,50 @@
+<div ngClass="chat">
+
+  <div fxLayout="row">
+
+    <div fxFlex="20" ngClass="apis">
+
+      <mat-selection-list [multiple]="false">
+        <mat-list-option *ngFor="let api of apis" [value]="api" (click)="apiSelected(api)">
+          {{api}}
+        </mat-list-option>
+      </mat-selection-list>
+
+    </div>
+
+
+    <div fxFlex="80">
+      <div fxLayout="column">
+
+        <div #repliesDiv ngClass="repliesDiv">
+          <mat-list-item #repliesList
+                         ngClass="reply"
+                         *ngFor="let reply of replies">
+            <span matPrefix ngClass="replyPrefixSpan"><img ngClass="userImg" [src]=getReplyUserImage(reply)><span
+              ngClass="replySpan">{{reply.content}}</span></span>
+          </mat-list-item>
+        </div>
+
+
+        <mat-form-field appearance="outline" ngClass="inputForm">
+          <mat-label>Query</mat-label>
+          <input matInput ngClass="inputQuery"
+                 #queryInput
+                 [(ngModel)]="query"
+                 (keyup.enter)="sendQuery(queryInput.value)"
+                 type="text">
+          <span matSuffix
+                (click)="sendQuery(queryInput.value)"><img ngClass="sendButton" src="../../assets/send-24px.svg"></span>
+        </mat-form-field>
+
+      </div>
+    </div>
+
+  </div>
+
+    <div ngClass="result">
+      <pre>{{result | json }}</pre>
+    </div>
+
+
+</div>

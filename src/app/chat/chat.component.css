@@ -1,0 +1,75 @@
+.inputQuery {
+
+}
+
+
+.chat {
+  padding-top: 25px;
+}
+
+
+.inputForm {
+
+  padding-top: 20px;
+}
+
+.chatOverview {
+
+}
+
+.sendButton {
+  padding-bottom: 5px;
+}
+
+.apis {
+  margin-right: 20px;
+  border-style: solid;
+  border-radius: 3px;
+  border-width: 1px;
+  margin-bottom: 32px;
+}
+
+
+.replyPrefixSpan {
+  padding-left: 10px;
+}
+
+.mat-list-item {
+  padding: 10px 10px 10px 10px;
+}
+
+.replySpan {
+  position: relative;
+  top: -5px;
+  padding: 10px;
+}
+
+
+.repliesDiv {
+  border-style: solid;
+  border-radius: 3px;
+  border-width: 1px;
+  height: 38vh;
+  overflow: auto;
+}
+
+
+.result {
+  width: 98%;
+  height: 32vh;
+  border-style: solid;
+  border-radius: 3px;
+  border-width: 1px;
+  overflow: auto;
+  padding: 5px 20px 5px 20px
+}
+
+
+.mat-list-option {
+  font-size: 20px !important;
+}
+
+.replyItem {
+  height: 40px;
+}
+
