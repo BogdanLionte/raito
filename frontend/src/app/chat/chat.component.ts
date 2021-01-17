@@ -1,4 +1,5 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {HttpClient, HttpParams} from '@angular/common/http';
 
 @Component({
   selector: 'app-chat',
@@ -10,15 +11,16 @@ export class ChatComponent implements OnInit, AfterViewInit {
   @ViewChild('repliesList') repliesList;
   @ViewChild('repliesDiv') repliesDiv;
 
-  apis: string[] = ['api1', 'api2'];
+  apis: string[] = ['api1', 'api2', 'json'];
 
   query: string;
-n
+
   result: any;
 
   replies: any[] = [];
+  private selectedApi: string;
 
-  constructor() {
+  constructor(private http: HttpClient) {
   }
 
   ngAfterViewInit(): void {
@@ -37,7 +39,12 @@ n
       author: 'user'
     }];
 
-    this.query = '';
+    let params = new HttpParams().set('sentence', query);
+
+    console.log('send query???');
+    this.http.get('http://localhost:8000/query/' + this.selectedApi, {params: params}).subscribe(result => {
+      console.log('result', result);
+    });
 
     this.result = {
       userId: 1,
@@ -74,6 +81,7 @@ n
 
   apiSelected(api: string) {
     console.log('selected api', api);
+    this.selectedApi = api;
   }
 
   private populateChatHistory() {
