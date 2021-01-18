@@ -44,34 +44,35 @@ export class ChatComponent implements OnInit, AfterViewInit {
     console.log('send query???');
     this.http.get('http://localhost:8000/query/' + this.selectedApi, {params: params}).subscribe(result => {
       console.log('result', result);
+      this.result = result;
     });
 
-    this.result = {
-      userId: 1,
-      id: 1,
-      title: 'delectus aut autem',
-      completed1: false,
-      completed2: false,
-      completed3: false,
-      completed4: false,
-      completed5: false,
-      completed6: false,
-      completed7: false,
-      completed8: false,
-      completed9: false,
-      completed11: false,
-      completed22: false,
-      completed33: false,
-      completed44: false,
-      completed55: false,
-      completed66: false,
-      completed77: false,
-      completed88: false,
-      completed99: false,
-      completed00: false,
-      completed12: false,
-      completed13: false
-    };
+    // this.result = {
+    //   userId: 1,
+    //   id: 1,
+    //   title: 'delectus aut autem',
+    //   completed1: false,
+    //   completed2: false,
+    //   completed3: false,
+    //   completed4: false,
+    //   completed5: false,
+    //   completed6: false,
+    //   completed7: false,
+    //   completed8: false,
+    //   completed9: false,
+    //   completed11: false,
+    //   completed22: false,
+    //   completed33: false,
+    //   completed44: false,
+    //   completed55: false,
+    //   completed66: false,
+    //   completed77: false,
+    //   completed88: false,
+    //   completed99: false,
+    //   completed00: false,
+    //   completed12: false,
+    //   completed13: false
+    // };
 
     setTimeout(() => {
       this.scrollToLastReply();

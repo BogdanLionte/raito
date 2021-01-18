@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 
 import pathlib
+import re
 print(pathlib.Path(__file__).parent.absolute())
 
 
@@ -59,6 +60,33 @@ def get_predicted_verbs(sentence, available_verbs):
     print('predicted verbs?', predicted_verbs)
     return predicted_verbs
 
+
+def predict_path_param(sentence, predicted_path, predicted_paths):
+    path_params = re.findall("\/.*\/\{.*\}", predicted_path.name)
+    print('path paramzz')
+    print(path_params)
+
+    for path_param in path_params:
+        path_param_name = path_param.split("/")[1]
+        path_param_position_in_sentence = sentence.find(path_param_name)
+        print("aaaa")
+        print(sentence[path_param_position_in_sentence:])
+        possible_path_param_values = re.findall("\d+", sentence[path_param_position_in_sentence:])
+        if len(possible_path_param_values) > 0:
+            path_param_value = re.findall("\d+", sentence[path_param_position_in_sentence:])[0]
+        else:
+            possible_path_param_values = re.findall("\d+", sentence)
+            if len(possible_path_param_values) <= 0:
+                print('could not determine path param value for path param ' + path_param_name + ' in predicted path ' + str(predicted_path))
+                predicted_paths.remove(predicted_path)
+                return
+            else:
+                path_param_value = re.findall("\d+", sentence)[0]
+
+        print('replacing path param ' + path_param_name + ' with value ' + path_param_value)
+        predicted_path.name = predicted_path.name.replace(path_param.split("/")[2], path_param_value)
+
+
 def query(request, api):
 
     # http://localhost:8000/query/api?sentence=sall
@@ -74,6 +102,8 @@ def query(request, api):
 
     for predicted_path in predicted_paths:
         predicted_path.verbs = get_predicted_verbs(sentence, get_available_verbs(json_api_description, predicted_path.name))
+        predict_path_param(sentence, predicted_path, predicted_paths)
+
 
     print('predicted paths', predicted_paths)
 
