@@ -16,8 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import external_api
+import authentication
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(r'query/<str:api>', external_api.query)
+    path(r'query/<str:api>', external_api.query),
+    path(r'auth/', authentication.get_auth_uri),
+    path(r'code/', authentication.consume_auth_code),
+    path(r'refresh/', authentication.refresh_tokens)
 ]

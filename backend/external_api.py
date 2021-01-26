@@ -2,8 +2,8 @@ from django.http import HttpResponse
 
 import pathlib
 import re
+from authentication import is_authorized
 print(pathlib.Path(__file__).parent.absolute())
-
 
 import json
 
@@ -87,6 +87,7 @@ def predict_path_param(sentence, predicted_path, predicted_paths):
         predicted_path.name = predicted_path.name.replace(path_param.split("/")[2], path_param_value)
 
 
+@is_authorized
 def query(request, api):
 
     # http://localhost:8000/query/api?sentence=sall
