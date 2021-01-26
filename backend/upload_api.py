@@ -1,7 +1,8 @@
-from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from authentication import is_authorized
 
-@csrf_exempt
+
+@is_authorized
 def upload(request):
     print(request)
     print(request.FILES.keys())

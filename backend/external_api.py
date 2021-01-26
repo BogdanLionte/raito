@@ -3,6 +3,7 @@ import json
 from django.http import HttpResponse
 from difflib import get_close_matches
 import requests
+from authentication import is_authorized
 
 verb_synonyms = {
     'get': ['get', 'fetch', 'retrieve', 'give', 'bring'],
@@ -36,6 +37,7 @@ class Path:
 
 
 
+@is_authorized
 def query(request, api):
     sentence = request.GET.get('sentence')
 
