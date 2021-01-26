@@ -13,7 +13,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   @ViewChild('repliesList') repliesList;
   @ViewChild('repliesDiv') repliesDiv;
 
-  apis: string[] = ['json', 'questions'];
+  apis: string[] = [];
 
   query: string;
 
@@ -32,6 +32,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+
+    this.http.get(this.baseApiUrl + '/api/').subscribe(apis => apis.forEach(api => this.apis.push(api)));
+
     setTimeout(() => {
       this.scrollToLastReply();
     }, 100);

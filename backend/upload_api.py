@@ -14,7 +14,7 @@ def upload(request):
     for line in file:
         fileContent = fileContent + line.decode()
 
-    file = open(fileName, "w")
+    file = open('./apis/' + fileName, "w")
     file.write(fileContent)
 
     return HttpResponse('')

@@ -193,4 +193,4 @@ def get_value_for_key_in_sentence(key, sentence):
 
 
 def get_json_description_for_api(api):
-    return json.load(open('./' + api + '.json'))
+    return json.load(open('./apis/' + api + '.json'))

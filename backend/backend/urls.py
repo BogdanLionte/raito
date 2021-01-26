@@ -17,9 +17,11 @@ from django.contrib import admin
 from django.urls import path
 import external_api
 import upload_api
+import apis
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'query/<str:api>', external_api.query),
-    path(r'upload/', upload_api.upload)
+    path(r'upload/', upload_api.upload),
+    path(r'api/', apis.get)
 ]
