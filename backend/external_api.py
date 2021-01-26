@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from difflib import get_close_matches
 import requests
 from authentication import is_authorized
+from authentication import http_method_list
 
 verb_synonyms = {
     'get': ['get', 'fetch', 'retrieve', 'give', 'bring'],
@@ -37,6 +38,7 @@ class Path:
 
 
 
+@http_method_list(["GET"])
 @is_authorized
 def query(request, api):
     sentence = request.GET.get('sentence')

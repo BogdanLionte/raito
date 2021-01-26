@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 from authentication import is_authorized
+from authentication import http_method_list
 
 
+@http_method_list(["POST"])
 @is_authorized
 def upload(request):
     print(request)
