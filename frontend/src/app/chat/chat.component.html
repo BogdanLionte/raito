@@ -33,13 +33,14 @@
                  [(ngModel)]="query"
                  (keyup.enter)="sendQuery(queryInput.value)"
                  type="text">
-          <span matSuffix
-                (click)="sendQuery(queryInput.value)"><img ngClass="sendButton" src="../../assets/send-24px.svg"></span>
+          <span matSuffix class="material-icons"
+                (click)="sendQuery(queryInput.value)">send
+          </span>
+          <span matSuffix class="material-icons" (click)="startListening();">mic</span>
         </mat-form-field>
 
       </div>
     </div>
-
   </div>
 
     <div ngClass="result">

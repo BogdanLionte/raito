@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 
 @Component({
@@ -20,7 +20,11 @@ export class ChatComponent implements OnInit, AfterViewInit {
   replies: any[] = [];
   private selectedApi: string;
 
-  constructor(private http: HttpClient) {
+  recognition;
+  speechRecognitionList;
+
+  constructor(private http: HttpClient,
+              private _cdr: ChangeDetectorRef) {
   }
 
   ngAfterViewInit(): void {
@@ -31,6 +35,12 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.populateChatHistory();
+
+
+    this.initSpeechRecognition();
+
+
+
   }
 
   sendQuery(query: string) {
@@ -133,6 +143,46 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   private scrollToLastReply() {
     this.repliesDiv.nativeElement.children[this.repliesDiv.nativeElement.children.length - 1].scrollIntoView();
+  }
+
+  startListening() {
+    this.query = 'ciao';
+    console.log('starting speech recognition');
+    this.recognition.start();
+  }
+
+
+  private initSpeechRecognition() {
+    var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+    var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+
+    this.recognition = new SpeechRecognition();
+    this.speechRecognitionList = new SpeechGrammarList();
+    this.recognition.grammars = this.speechRecognitionList;
+    this.recognition.continuous = true;
+    this.recognition.lang = 'en-US';
+    this.recognition.interimResults = true;
+    this.recognition.maxAlternatives = 1;
+
+    let that = this;
+    this.recognition.onresult = function(event) {
+      for (var i = event.resultIndex; i < event.results.length; i++) {
+        that.query = event.results[i][0].transcript;
+        that._cdr.detectChanges();
+      }
+    };
+
+    this.recognition.onspeechend = function() {
+      that.recognition.stop();
+    };
+
+    this.recognition.onnomatch = function(event) {
+      console.log('did not recognize', event);
+    };
+
+    this.recognition.onerror = function(event) {
+      console.log('error', event);
+    };
   }
 
 }
