@@ -9,7 +9,9 @@
           {{api}}
         </mat-list-option>
       </mat-selection-list>
-
+      <span class="material-icons" ngClass="add-button" type="file" (click)="fileInput.click()">add </span>
+      <input hidden class="form-control" type="file" #fileInput
+             (change)="onChange($event)">
     </div>
 
 
