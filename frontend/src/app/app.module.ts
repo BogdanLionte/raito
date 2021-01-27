@@ -14,11 +14,13 @@ import {MatListModule} from '@angular/material/list';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ChatComponent
+    ChatComponent,
+    AuthComponent
   ],
   imports: [
     BrowserModule,

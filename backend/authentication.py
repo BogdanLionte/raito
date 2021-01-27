@@ -73,15 +73,9 @@ def get_auth_uri(_request):
         "state": csrf_token
     }
     auth_uri = base_uri + "?" + urllib.parse.urlencode(params)
-    html = f"""
-        <html>
-            <script>
-                window.open("{auth_uri}");
-            </script>
-        </html>
-    """
-    response = HttpResponse(html)
-    response["Content-Type"] = "text/html"
+    json_result = json.dumps({"auth": auth_uri})
+    response = HttpResponse(json_result)
+    response["Content-Type"] = "application/json"
     response.status_code = 200
     return response
 
