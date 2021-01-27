@@ -23,7 +23,7 @@
                          ngClass="reply"
                          *ngFor="let reply of replies">
             <span matPrefix ngClass="replyPrefixSpan"><img ngClass="userImg" [src]=getReplyUserImage(reply)><span
-              ngClass="replySpan">{{reply.content}}</span></span>
+              (click)="getResponseForReply(reply)" ngClass="replySpan">{{reply.content}}</span></span>
           </mat-list-item>
         </div>
 

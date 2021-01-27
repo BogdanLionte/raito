@@ -19,6 +19,7 @@ import external_api
 import upload_api
 import apis
 import authentication
+import history
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,5 +28,6 @@ urlpatterns = [
     path(r'api/', apis.get),
     path(r'auth/', authentication.get_auth_uri),
     path(r'code/', authentication.consume_auth_code),
-    path(r'refresh/', authentication.refresh_tokens)
+    path(r'refresh/', authentication.refresh_tokens),
+    path(r'history/', history.get)
 ]

@@ -14,7 +14,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   @ViewChild('repliesDiv') repliesDiv;
 
   apis: string[] = [];
-
+  history: string[] = [];
   query: string;
 
   result: any;
@@ -34,6 +34,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
 
     this.http.get(this.baseApiUrl + '/api/').subscribe(apis => (apis as any[]).forEach(api => this.apis.push(api)));
+    this.http.get(this.baseApiUrl + '/history/').subscribe(histories => {
+      this.history = histories as string[];
+    });
 
     setTimeout(() => {
       this.scrollToLastReply();
@@ -41,7 +44,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.populateChatHistory();
+    // this.populateChatHistory();
     this.initSpeechRecognition();
   }
 
@@ -62,38 +65,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
     let params = new HttpParams().set('sentence', query);
 
-    console.log('send query???');
     this.http.get('http://localhost:8000/query/' + this.selectedApi, {params: params}).subscribe(result => {
-      console.log('result', result);
       this.result = result;
     });
-
-    // this.result = {
-    //   userId: 1,
-    //   id: 1,
-    //   title: 'delectus aut autem',
-    //   completed1: false,
-    //   completed2: false,
-    //   completed3: false,
-    //   completed4: false,
-    //   completed5: false,
-    //   completed6: false,
-    //   completed7: false,
-    //   completed8: false,
-    //   completed9: false,
-    //   completed11: false,
-    //   completed22: false,
-    //   completed33: false,
-    //   completed44: false,
-    //   completed55: false,
-    //   completed66: false,
-    //   completed77: false,
-    //   completed88: false,
-    //   completed99: false,
-    //   completed00: false,
-    //   completed12: false,
-    //   completed13: false
-    // };
 
     setTimeout(() => {
       this.scrollToLastReply();
@@ -102,44 +76,19 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   apiSelected(api: string) {
-    console.log('selected api', api);
     this.selectedApi = api;
-  }
 
-  private populateChatHistory() {
-    this.replies.push({
-        content: 'Give me all the books',
-        author: 'user'
-      },
-      {
-        content: 'Here are all the books',
-        author: 'AI'
-      },
-      {
-        content: 'Did I get it right?',
-        author: 'AI'
-      },
-      {
-        content: 'No you did not!!!!',
-        author: 'user'
-      },
-      {
-        content: 'No you did not!!!!',
-        author: 'user'
-      },
-      {
-        content: 'No you did not!!!!',
-        author: 'user'
-      },
-      {
-        content: 'No you did not!!!!',
-        author: 'user'
-      },
-
-      {
-        content: 'Hellow',
-        author: 'user'
-      });
+    this.replies = [];
+    this.history.forEach((reply: any) =>
+    {
+      if (reply.api === this.selectedApi) {
+        this.replies.push({
+          content: reply.query,
+          author: 'user',
+          response: reply.response
+        })
+      }
+    })
   }
 
   getReplyUserImage(reply: any) {
@@ -153,12 +102,12 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   private scrollToLastReply() {
-    this.repliesDiv.nativeElement.children[this.repliesDiv.nativeElement.children.length - 1].scrollIntoView();
+    if (this.repliesDiv.nativeElement.children[this.repliesDiv.nativeElement.children.length - 1]) {
+      this.repliesDiv.nativeElement.children[this.repliesDiv.nativeElement.children.length - 1].scrollIntoView();
+    }
   }
 
   startListening() {
-    this.query = 'ciao';
-    console.log('starting speech recognition');
     this.recognition.start();
   }
 
@@ -211,4 +160,12 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.apis.push(file.name.split('.')[0]));
   }
 
+  getResponseForReply(clickedReply: any) {
+    this.replies.forEach(reply => {
+      if (clickedReply.content === reply.content) {
+        this.result = reply.response;
+      }
+    });
+
+  }
 }
