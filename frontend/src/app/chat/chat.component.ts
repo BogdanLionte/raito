@@ -33,7 +33,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    this.http.get(this.baseApiUrl + '/api/').subscribe(apis => apis.forEach(api => this.apis.push(api)));
+    this.http.get(this.baseApiUrl + '/api/').subscribe(apis => (apis as any[]).forEach(api => this.apis.push(api)));
 
     setTimeout(() => {
       this.scrollToLastReply();
@@ -196,7 +196,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
     };
   }
 
-  onChange(event: Event) {
+  onChange(event: any) {
     var file = event.target.files[0];
 
     if (!file) {

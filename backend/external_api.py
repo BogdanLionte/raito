@@ -44,33 +44,28 @@ class Path:
 def query(request, api):
     sentence = request.GET.get('sentence')
 
-    api_information = get_api_information_from_database(api)
-
     json_api_description = get_json_description_for_api(api)
     predicted_paths = get_predicted_paths(sentence, get_available_paths(json_api_description))
-    print('preddd', predicted_paths)
     api_base_path = json_api_description['servers'][0]['url']
 
     for predicted_path in predicted_paths:
         predicted_path.verbs = get_predicted_verbs(sentence,
                                                    get_available_verbs(json_api_description, predicted_path.name))
-        print('vrbs for path', predicted_path.verbs, predicted_path.name)
         predict_path_param(sentence, predicted_path)
 
     # remove paths with no predicted verbs
     predicted_paths = [path for path in predicted_paths if path.verbs]
 
-    print('predicted paths', predicted_paths)
-
     set_request_body(predicted_paths, json_api_description, sentence)
 
     response = {}
     response['predicted_requests'] = build_requests(api_base_path, predicted_paths)
-    response['api_response'] = send_request_and_get_response(response['predicted_requests'][0])
 
-    # if not api_information:
-    #     api_information = extract_information(api)
-    #     save_api_information_to_database(api_information)
+    if not response['predicted_requests']:
+        response['api_response'] = []
+    else:
+        response['api_response'] = send_request_and_get_response(response['predicted_requests'][0])
+
     response = json.dumps(response)
     access_token = request.headers.get("Authorization")
     database.write_query(access_token, api, response)
@@ -89,7 +84,6 @@ def get_predicted_paths(sentence, available_paths):
 
 
 def get_predicted_verbs(sentence, available_verbs):
-    print('available verbs', available_verbs)
     predicted_verbs = []
 
     for available_verb in available_verbs:
@@ -97,25 +91,20 @@ def get_predicted_verbs(sentence, available_verbs):
             if available_verb in verb_synonyms.keys() and word in verb_synonyms[available_verb]:
                 predicted_verbs.append(available_verb)
 
-    print('predicted verbs?', predicted_verbs)
     return predicted_verbs
 
 
 def predict_path_param(sentence, predicted_path):
     path_params = re.findall("\/.*\/\{.*\}", predicted_path.name)
-    print('path paramzz')
-    print(path_params)
 
     for path_param in path_params:
         path_param_name = path_param.split("/")[2]
         path_param_value = get_value_for_key_in_sentence(path_param_name, sentence)
-        print('replacing path param ' + path_param_name + ' with value ' + path_param_value)
         predicted_path.name = predicted_path.name.replace(path_param.split("/")[2], path_param_value)
 
 
 def create_json_request_body(request_body_content, sentence):
     properties = request_body_content['properties']
-    print('propzzz', properties)
     request_body = {}
 
     for property in properties:
@@ -132,7 +121,6 @@ def set_request_body(predicted_paths, json_api_description, sentence):
                     'content']
 
                 if 'application/json' in request_body_content.keys():
-                    print('trying to create request body for ', verb, predicted_path.name)
                     predicted_path.request_body = create_json_request_body(
                         request_body_content['application/json']['schema'], sentence)
 
@@ -170,31 +158,15 @@ def build_requests(api_base_path, predicted_paths):
     return predicted_requests
 
 
-def get_available_HTTP_methods_for_path(param):
-    pass
-
-
-def get_api_information_from_database(api):
-    return None
-
-
-def save_api_information_to_database(api_information):
-    pass
-
-
 def get_available_paths(json_api_description):
     return json_api_description['paths']
-
 
 def get_available_verbs(json_api_description, path):
     return json_api_description['paths'][path].keys()
 
-
 def get_value_for_key_in_sentence(key, sentence):
     words = sentence.split()
     for i in range(len(words)):
-        print('qqq', words[i])
-        print('zzzzz', get_close_matches(key, [words[i]], cutoff=0.5), key, words[i])
         if get_close_matches(key, [words[i]], cutoff=0.5):
             return words[i + 1]
 
