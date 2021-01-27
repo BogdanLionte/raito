@@ -89,7 +89,7 @@ def get_predicted_verbs(sentence, available_verbs):
 
     for available_verb in available_verbs:
         for word in sentence.split():
-            if available_verb in verb_synonyms.keys() and get_close_matches(word, verb_synonyms[available_verb], cutoff=0.5):
+            if available_verb in verb_synonyms.keys() and get_close_matches(word, verb_synonyms[available_verb], cutoff=0.8):
                 predicted_verbs.append(available_verb)
 
     return list(dict.fromkeys(predicted_verbs))
@@ -132,6 +132,8 @@ def send_request_and_get_response(request):
     url = request.split()[1]
     if len(request.split()) > 2:
         params = request.split()[2]
+    else:
+        params = ''
 
     if verb == 'GET':
         response = requests.get(url = url)

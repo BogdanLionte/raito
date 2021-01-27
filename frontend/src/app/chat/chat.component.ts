@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {FormControl, Validators} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
@@ -33,9 +33,13 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    this.http.get(this.baseApiUrl + '/api/').subscribe(apis => (apis as any[]).forEach(api => this.apis.push(api)));
-    this.http.get(this.baseApiUrl + '/history/').subscribe(histories => {
-      this.history = histories as string[];
+    this.http.get(this.baseApiUrl + '/api/', {headers: new HttpHeaders({
+        Authorization: localStorage.getItem('access_token')
+      })}).subscribe(apis => (apis as any[]).forEach(api => this.apis.push(api)));
+    this.http.get(this.baseApiUrl + '/history/', {headers: new HttpHeaders({
+        Authorization: localStorage.getItem('access_token')
+      })}).subscribe(histories => {
+      this.history = histories["history"] as string[];
     });
 
     setTimeout(() => {
@@ -65,7 +69,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
     let params = new HttpParams().set('sentence', query);
 
-    this.http.get('http://localhost:8000/query/' + this.selectedApi, {params: params}).subscribe(result => {
+    this.http.get('http://localhost:8000/query/' + this.selectedApi, {params: params, headers: new HttpHeaders({
+        Authorization: localStorage.getItem('access_token')
+      })}).subscribe(result => {
       this.result = result;
     });
 
@@ -83,9 +89,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
     {
       if (reply.api === this.selectedApi) {
         this.replies.push({
-          content: reply.query,
+          content: reply.sentence,
           author: 'user',
-          response: reply.response
+          response: reply.result
         })
       }
     })
@@ -156,7 +162,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
     formData.append("file", file, file.name);
 
-    this.http.post(this.baseApiUrl + '/upload/', formData).subscribe(response =>
+    this.http.post(this.baseApiUrl + '/upload/', formData, {headers: new HttpHeaders({
+        Authorization: localStorage.getItem('access_token')
+      })}).subscribe(response =>
     this.apis.push(file.name.split('.')[0]));
   }
 
