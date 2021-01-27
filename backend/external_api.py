@@ -68,7 +68,7 @@ def query(request, api):
 
     response = json.dumps(response)
     access_token = request.headers.get("Authorization")
-    database.write_query(access_token, api, response)
+    database.write_query(access_token, api, response, sentence)
     return HttpResponse(response)
 
 
