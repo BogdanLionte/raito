@@ -86,12 +86,13 @@ def get_predicted_paths(sentence, available_paths):
 def get_predicted_verbs(sentence, available_verbs):
     predicted_verbs = []
 
+
     for available_verb in available_verbs:
         for word in sentence.split():
-            if available_verb in verb_synonyms.keys() and word in verb_synonyms[available_verb]:
+            if available_verb in verb_synonyms.keys() and get_close_matches(word, verb_synonyms[available_verb], cutoff=0.5):
                 predicted_verbs.append(available_verb)
 
-    return predicted_verbs
+    return list(dict.fromkeys(predicted_verbs))
 
 
 def predict_path_param(sentence, predicted_path):
