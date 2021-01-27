@@ -5,6 +5,7 @@ from difflib import get_close_matches
 import requests
 from authentication import is_authorized
 from authentication import http_method_list
+import database
 
 verb_synonyms = {
     'get': ['get', 'fetch', 'retrieve', 'give', 'bring'],
@@ -70,8 +71,10 @@ def query(request, api):
     # if not api_information:
     #     api_information = extract_information(api)
     #     save_api_information_to_database(api_information)
-
-    return HttpResponse(json.dumps(response))
+    response = json.dumps(response)
+    access_token = request.headers.get("Authorization")
+    database.write_query(access_token, api, response)
+    return HttpResponse(response)
 
 
 def get_predicted_paths(sentence, available_paths):

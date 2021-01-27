@@ -45,7 +45,7 @@ def create_claims(user_email, exp_time):
 def create_access_token(user_email):
     with open("secrets/access_token.key", 'r') as f:
         rsa_private_key = f.read()
-        claims = create_claims(user_email, 60 * 60 * 24 * 7 * 4 * 12)
+        claims = create_claims(user_email, 60)
         claims["aud"] = "access"
         signer = crypt.RSASigner.from_string(rsa_private_key)
         return jwt.encode(signer, claims).decode("ascii")
@@ -108,7 +108,6 @@ def consume_auth_code(request):
     access_token = create_access_token(user_email)
     refresh_token = create_refresh_token(user_email)
     message = json.dumps({"access_token": access_token, "refresh_token": refresh_token})
-    print(access_token)
     html = f"""
     <html>
         <script>
