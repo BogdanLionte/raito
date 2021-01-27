@@ -1,29 +1,40 @@
 import mysql.connector
 from authentication import validate_access_token
+import mysql.connector.pooling
 
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="raito"
-)
+db_config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "root",
+    "database": "raito"
+}
+
+conn_pool = mysql.connector.pooling.MySQLConnectionPool(pool_name="pool", pool_size=3, **db_config)
 
 
 def write_query(access_token, api, result):
     user_email = validate_access_token(access_token)
     stmt = "INSERT INTO userqueries(user_email, api, result) VALUES (%s, %s, %s)"
     params = (user_email, api, result)
-    db.cursor().execute(stmt, params)
-    db.commit()
+    conn = conn_pool.get_connection()
+    cursor = conn.cursor()
+    cursor.execute(stmt, params)
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 def read_queries(access_token):
     user_email = validate_access_token(access_token)
     stmt = "SELECT * FROM userqueries WHERE user_email = %s"
     params = (user_email,)
-    cursor = db.cursor()
+    conn = conn_pool.get_connection()
+    cursor = conn.cursor()
     cursor.execute(stmt, params)
-    return cursor.fetchall()
+    result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return result
 
 
 if __name__ == '__main__':
