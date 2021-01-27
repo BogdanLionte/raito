@@ -1,7 +1,7 @@
 import {AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {FormControl, Validators} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {ApiService} from '../api.service';
 
 @Component({
   selector: 'app-chat',
@@ -28,13 +28,14 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   constructor(private http: HttpClient,
               private _cdr: ChangeDetectorRef,
-              private _snackBar: MatSnackBar) {
+              private _snackBar: MatSnackBar,
+              private apiService: ApiService) {
   }
 
   ngAfterViewInit(): void {
 
-    this.http.get(this.baseApiUrl + '/api/').subscribe(apis => (apis as any[]).forEach(api => this.apis.push(api)));
-    this.http.get(this.baseApiUrl + '/history/').subscribe(histories => {
+    this.apiService.sendGetRequest(this.baseApiUrl + '/api/').subscribe(apis => (apis as any[]).forEach(api => this.apis.push(api)));
+    this.apiService.sendGetRequest(this.baseApiUrl + '/history/').subscribe(histories => {
       this.history = histories as string[];
     });
 
@@ -44,7 +45,6 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // this.populateChatHistory();
     this.initSpeechRecognition();
   }
 
@@ -65,7 +65,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
     let params = new HttpParams().set('sentence', query);
 
-    this.http.get('http://localhost:8000/query/' + this.selectedApi, {params: params}).subscribe(result => {
+    this.apiService.sendGetRequest(this.baseApiUrl + '/query/' + this.selectedApi, {params: params}).subscribe(result => {
       this.result = result;
     });
 
@@ -156,7 +156,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
     formData.append("file", file, file.name);
 
-    this.http.post(this.baseApiUrl + '/upload/', formData).subscribe(response =>
+    this.apiService.sendPostRequest(this.baseApiUrl + '/upload/', formData).subscribe(response =>
     this.apis.push(file.name.split('.')[0]));
   }
 
