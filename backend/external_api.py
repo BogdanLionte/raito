@@ -100,7 +100,8 @@ def predict_path_param(sentence, predicted_path):
     for path_param in path_params:
         path_param_name = path_param.split("/")[2]
         path_param_value = get_value_for_key_in_sentence(path_param_name, sentence)
-        predicted_path.name = predicted_path.name.replace(path_param.split("/")[2], path_param_value)
+        if path_param_value:
+            predicted_path.name = predicted_path.name.replace(path_param.split("/")[2], path_param_value)
 
 
 def create_json_request_body(request_body_content, sentence):
