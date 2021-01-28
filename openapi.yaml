@@ -20,27 +20,31 @@ paths:
       summary: Initiate an authentication flow
       operationId: startAuth
       responses:
-        302:
-          description: Redirect to Google authentication endpoint via location header.
-          headers: 
-            location:
-              description: The redirect location
+        200:
+          description: The Google authentication endpoint.
+          content:
+            application/json:
               schema:
-                type: string
+                type: object
+                required: [auth, ]
+                properties:
+                  auth:
+                    type: string
   /code:
     get:
       tags:
         - auth
-      summary: The Redirect location for Google
+      summary: The endpoint for receiving the authentication code
       operationId: consumeCode
       responses:
-        302:
-          description: Redirect to homepage
-          headers:
-            location:
-              description: The homepage location
+        200:
+          description: Close the auth window and send the tokens
+          content:
+            text/html:
               schema:
                 type: string
+                example: <html><script>window.opener.postMessage('{message}', 'http://localhost:4200');window.close();/script></html>    
+              
         401:
           description: Unauthorized
   /refresh:
@@ -74,11 +78,11 @@ paths:
                     type: string
         401:
           description: Unauthorized
-  /query/{api_name}:
+  /query/{api}:
     get:
       parameters:
         - in: path
-          name: api_name
+          name: api
           required: true
           schema:
             type: string
@@ -100,10 +104,15 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [api_response]
+                required: [api_response, predicted_requests]
                 properties:
                   api_response:
                     type: string
+                  predicted_requests:
+                    type: array
+                    items:
+                      type: string
+                    
         400:
           description: The given sentence could not be transformed.
         401:
@@ -111,37 +120,70 @@ paths:
       security:
         - raito_auth:
           - api:query
-  /info/{api_name}:
-    get:
-      parameters:
-        - in: path
-          name: api_name
-          required: true
-          schema:
-            type: string
-          description: The name of the API to be queried.
+  /upload_api:
+    post:
+      summary: Upload a new openapi spec
       tags:
-        - info
-      summary: Obtain information about currently supported APIs.
-      operationId: info
+      - upload
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
       responses:
         200:
-          description: Successful fetching of API specification.
+          description: Successful upload
+      security:
+        - raito_auth:
+          - api:query    
+  /api:
+    get:
+      tags:
+        - info
+      summary: Obtain the names of the currently added APIs.
+      operationId: api
+      responses:
+        200:
+          description: Successful fetching of API name.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      security:
+        - raito_auth:
+          - api:info
+  /history:
+    get:
+      tags:
+        - info
+      summary: get the query history of a user(from the access token)
+      operationId: history
+      responses:
+        200:
+          description: Fetched the history
           content:
             application/json:
               schema:
                 type: object
-                required: [api_spec]
+                required: [history]
                 properties:
-                  api_spec:
-                    type: string
-        404:
-          description: The given API does not exist in the system.
-        401:
-          description: Unauthorized
-      security:
-        - raito_auth:
-          - api:info
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      required: [user, api, result, sentence]
+                      properties:
+                        user:
+                          type: string
+                        api:
+                          type: string
+                        result:
+                          type: string
+                        sentence:
+                          type: string
 components:
   securitySchemes:
     raito_auth:
